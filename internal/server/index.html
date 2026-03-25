@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HostCheck</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { margin-bottom: 20px; color: #333; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-start; }
+        .input-wrapper { flex: 1; position: relative; min-width: 0; }
+        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+        .history-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 4px 4px; max-height: 200px; overflow-y: auto; z-index: 100; display: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .history-dropdown.show { display: block; }
+        .history-item { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .history-item:last-child { border-bottom: none; }
+        .history-item:hover { background: #f0f0f0; }
+        .history-item .delete-btn { float: right; color: #999; font-size: 12px; display: none; }
+        .history-item:hover .delete-btn { display: inline; }
+        .history-item .delete-btn:hover { color: #c00; }
+        .run-btn { padding: 12px 24px; background: #0066cc; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+        .run-btn:hover { background: #0055aa; }
+        .run-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .checks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .check-item { display: flex; align-items: center; gap: 8px; padding: 10px; background: white; border-radius: 4px; }
+        .check-item input { width: 18px; height: 18px; }
+        .results { background: white; border-radius: 8px; padding: 20px; }
+        .tasks-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .tasks-table th, .tasks-table td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        .tasks-table th { background: #f8f9fa; font-weight: 600; }
+        .tasks-table td.status-cell { width: 80px; }
+        .tasks-table td.check-cell { width: 150px; font-weight: 500; }
+        .result-item { padding: 15px; border-bottom: 1px solid #eee; }
+        .result-item:last-child { border-bottom: none; }
+        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .result-name { font-weight: 600; color: #333; }
+        .result-duration { color: #666; font-size: 14px; }
+        .status { padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .status-PASS { background: #d4edda; color: #155724; }
+        .status-FAIL { background: #f8d7da; color: #721c24; }
+        .status-PARTIAL { background: #fff3cd; color: #856404; }
+        .status-WARN { background: #fff3cd; color: #856404; }
+        .status-ERROR { background: #f8d7da; color: #721c24; }
+        .status-SKIPPED { background: #e2e3e5; color: #383d41; }
+        .result-message { color: #555; margin-bottom: 8px; }
+        .result-details { font-size: 14px; color: #666; }
+        .result-details li { margin-left: 20px; margin-top: 4px; }
+        .summary { display: flex; gap: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px; margin-top: 20px; }
+        .summary-item { text-align: center; }
+        .summary-count { font-size: 24px; font-weight: 600; }
+        .summary-label { font-size: 14px; color: #666; }
+        .loading { text-align: center; padding: 40px; color: #666; }
+        .progress { text-align: center; padding: 20px; color: #0066cc; }
+        .section-title { font-size: 18px; font-weight: 600; color: #333; margin: 20px 0 10px 0; padding-top: 10px; border-top: 2px solid #ddd; }
+        .check-section { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HostCheck</h1>
+        <div class="input-group">
+            <div class="input-wrapper">
+                <input type="text" id="hostname" placeholder="Enter hostname or domain name..." autofocus autocomplete="off">
+                <div class="history-dropdown" id="historyDropdown"></div>
+            </div>
+            <button id="runBtn" class="run-btn" onclick="runChecks()">Run Checks</button>
+        </div>
+        <div class="checks-grid" id="checksGrid"></div>
+        <div id="results"></div>
+    </div>
+    <script>
+        let availableChecks = [];
+        const HISTORY_KEY = 'hostcheck_history';
+        const MAX_HISTORY = 10;
+        
+        function loadHistory() {
+            try {
+                return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            } catch { return []; }
+        }
+        
+        function saveHistory(history) {
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        }
+        
+        function addToHistory(hostname) {
+            let history = loadHistory();
+            // Remove if already exists
+            history = history.filter(h => h !== hostname);
+            // Add to front
+            history.unshift(hostname);
+            // Trim to max
+            if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+            saveHistory(history);
+            renderHistoryDropdown();
+        }
+        
+        function removeFromHistory(hostname, event) {
+            event.stopPropagation();
+            let history = loadHistory();
+            history = history.filter(h => h !== hostname);
+            saveHistory(history);
+            renderHistoryDropdown();
+        }
+        
+        function renderHistoryDropdown() {
+            const dropdown = document.getElementById('historyDropdown');
+            const history = loadHistory();
+            if (history.length === 0) {
+                dropdown.classList.remove('show');
+                return;
+            }
+            dropdown.innerHTML = history.map(h => 
+                '<div class="history-item" onclick="selectHistory(\'' + h.replace(/'/g, "\\'") + '\')">' +
+                '<span>' + h + '</span>' +
+                '<span class="delete-btn" onclick="removeFromHistory(\'' + h.replace(/'/g, "\\'") + '\', event)">remove</span>' +
+                '</div>'
+            ).join('');
+        }
+        
+        function selectHistory(hostname) {
+            document.getElementById('hostname').value = hostname;
+            document.getElementById('historyDropdown').classList.remove('show');
+        }
+        
+        async function loadChecks() {
+            const resp = await fetch('/api/checks');
+            const data = await resp.json();
+            availableChecks = data.checks || [];
+            renderChecks();
+        }
+        
+        function renderChecks() {
+            const grid = document.getElementById('checksGrid');
+            grid.innerHTML = availableChecks.map(c => 
+                '<label class="check-item">' +
+                '<input type="checkbox" checked value="' + c.name + '">' +
+                '<span>' + c.name + '</span>' +
+                '</label>'
+            ).join('');
+        }
+        
+        async function runChecks() {
+            const hostname = document.getElementById('hostname').value.trim();
+            if (!hostname) { alert('Please enter a hostname'); return; }
+            
+            addToHistory(hostname);
+            document.getElementById('historyDropdown').classList.remove('show');
+            
+            const checked = Array.from(document.querySelectorAll('.checks-grid input:checked')).map(i => i.value);
+            if (checked.length === 0) { alert('Please select at least one check'); return; }
+            
+            const btn = document.getElementById('runBtn');
+            const results = document.getElementById('results');
+            btn.disabled = true;
+            results.innerHTML = '<div class="progress">Starting checks...</div>';
+            
+            try {
+                const params = new URLSearchParams({ hostname });
+                checked.forEach(c => params.append('check', c));
+                
+                const resp = await fetch('/api/check/sse?' + params);
+                const reader = resp.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let resultsData = [];
+                let passed = 0, failed = 0, warned = 0, skipped = 0;
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    buffer += decoder.decode(value);
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop();
+                    
+                    for (const line of lines) {
+                        if (!line.startsWith('data: ')) continue;
+                        const data = JSON.parse(line.slice(6));
+                        
+                        if (data.type === 'result') {
+                            resultsData.push(data.data);
+                            const s = data.data.status;
+                            if (s === 'PASS') passed++;
+                            else if (s === 'FAIL' || s === 'ERROR') failed++;
+                            else if (s === 'WARN') warned++;
+                            else if (s === 'SKIPPED') skipped++;
+                            renderResults({hostname, results: resultsData, summary: {passed, failed, warned, skipped}});
+                        }
+                    }
+                }
+            } catch (e) {
+                results.innerHTML = '<div class="loading">Error: ' + e.message + '</div>';
+            }
+            btn.disabled = false;
+        }
+        
+        function renderResults(data) {
+            const results = document.getElementById('results');
+            if (data.results.length === 0) {
+                results.innerHTML = '<div class="progress">Running checks...</div>';
+                return;
+            }
+            
+            let html = '<div class="results">';
+            
+            // Tasks summary table
+            html += '<h2 class="section-title">Task Summary</h2>';
+            html += '<table class="tasks-table">';
+            html += '<thead><tr><th>Check</th><th>Task</th><th>Status</th><th>Message</th></tr></thead>';
+            html += '<tbody>';
+            
+            for (const r of data.results) {
+                if (r.tasks && r.tasks.length > 0) {
+                    for (let i = 0; i < r.tasks.length; i++) {
+                        const t = r.tasks[i];
+                        html += '<tr>';
+                        if (i === 0) {
+                            html += '<td class="check-cell" rowspan="' + r.tasks.length + '">' + r.name + '</td>';
+                        }
+                        html += '<td>' + t.check_name + '</td>';
+                        html += '<td class="status-cell"><span class="status status-' + t.status + '">' + t.status + '</span></td>';
+                        html += '<td>' + t.message + '</td>';
+                        html += '</tr>';
+                    }
+                } else {
+                    html += '<tr>';
+                    html += '<td class="check-cell">' + r.name + '</td>';
+                    html += '<td>Overall</td>';
+                    html += '<td class="status-cell"><span class="status status-' + r.status + '">' + r.status + '</span></td>';
+                    html += '<td>' + (r.message || '') + '</td>';
+                    html += '</tr>';
+                }
+            }
+            html += '</tbody></table>';
+            
+            // Summary counts
+            html += '<div class="summary">';
+            html += '<div class="summary-item"><div class="summary-count" style="color:#155724">' + data.summary.passed + '</div><div class="summary-label">Passed</div></div>';
+            html += '<div class="summary-item"><div class="summary-count" style="color:#721c24">' + data.summary.failed + '</div><div class="summary-label">Failed</div></div>';
+            html += '<div class="summary-item"><div class="summary-count" style="color:#856404">' + data.summary.warned + '</div><div class="summary-label">Warned</div></div>';
+            html += '<div class="summary-item"><div class="summary-count" style="color:#383d41">' + data.summary.skipped + '</div><div class="summary-label">Skipped</div></div>';
+            html += '</div>';
+            
+            // Detailed results
+            html += '<h2 class="section-title">Detailed Results</h2>';
+            
+            for (const r of data.results) {
+                html += '<div class="check-section">';
+                html += '<div class="result-header">';
+                html += '<span class="result-name">' + r.name + '</span>';
+                html += '<span class="result-duration">' + (r.duration || '0ms') + '</span>';
+                html += '</div>';
+                html += '<span class="status status-' + r.status + '">' + r.status + '</span>';
+                html += '<div class="result-message">' + (r.message || '') + '</div>';
+                if (r.details && r.details.length > 0) {
+                    html += '<ul class="result-details">';
+                    for (const d of r.details) { html += '<li>' + d + '</li>'; }
+                    html += '</ul>';
+                }
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            
+            results.innerHTML = html;
+        }
+        
+        // Event listeners for history dropdown
+        const hostnameInput = document.getElementById('hostname');
+        const historyDropdown = document.getElementById('historyDropdown');
+        
+        hostnameInput.addEventListener('focus', function() {
+            const history = loadHistory();
+            if (history.length > 0) {
+                renderHistoryDropdown();
+                historyDropdown.classList.add('show');
+            }
+        });
+        
+        hostnameInput.addEventListener('blur', function() {
+            // Delay to allow click on dropdown items
+            setTimeout(() => historyDropdown.classList.remove('show'), 200);
+        });
+        
+        hostnameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') runChecks();
+        });
+        
+        // Click outside to close dropdown
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.input-wrapper')) {
+                historyDropdown.classList.remove('show');
+            }
+        });
+        
+        loadChecks();
+    </script>
+</body>
+</html>
