@@ -1,0 +1,2 @@
+# hostcheck
+Hostname checking tool
