@@ -57,14 +57,11 @@ RUN GOTOOLCHAIN=auto go mod download
 # Copy source code
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
-COPY pkg/ ./pkg/
 COPY plugins/ ./plugins/
-
-COPY .git/ .git/
 
 COPY build/ /build/
 
-RUN /build/build-all.sh
+RUN --mount=type=cache,target=/src/.git /build/build-all.sh
 
 #############################################
 # Final stage - distroless with glibc
