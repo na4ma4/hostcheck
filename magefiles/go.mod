@@ -3,7 +3,7 @@ module github.com/na4ma4/hostcheck/magefiles
 go 1.26.0
 
 require (
-	github.com/dosquad/mage v0.3.2
+	github.com/dosquad/mage v0.3.4
 	github.com/magefile/mage v1.17.0
 	github.com/princjef/mageutil v1.0.0
 )
@@ -11,7 +11,7 @@ require (
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/cheggaaa/pb/v3 v3.1.7 // indirect
-	github.com/dosquad/go-cliversion v0.2.1 // indirect
+	github.com/dosquad/go-cliversion v0.3.0 // indirect
 	github.com/dosquad/go-giturl v0.1.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/go-resty/resty/v2 v2.16.5 // indirect
