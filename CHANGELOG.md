@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/na4ma4/hostcheck/compare/v1.0.3...v1.0.4) (2026-03-27)
+
+
+### Bug Fixes
+
+* dockerignore breaking build script in docker ([d5d6fef](https://github.com/na4ma4/hostcheck/commit/d5d6fef615b04857b27da53f8aee00b38a4dca9f))
+
 ## [1.0.3](https://github.com/na4ma4/hostcheck/compare/v1.0.2...v1.0.3) (2026-03-27)
 
 
