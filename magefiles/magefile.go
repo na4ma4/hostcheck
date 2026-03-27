@@ -9,9 +9,8 @@ import (
 	"github.com/magefile/mage/mg"
 
 	//mage:import
-
 	"github.com/dosquad/mage"
-	_ "github.com/dosquad/mage"
+
 	"github.com/dosquad/mage/dyndep"
 )
 

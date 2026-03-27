@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Docker
 
 on:
   release:
@@ -15,6 +15,7 @@ permissions:
 
 jobs:
   build-and-push:
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -66,7 +67,6 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            
 
       - name: Build and push
         uses: docker/build-push-action@v7
