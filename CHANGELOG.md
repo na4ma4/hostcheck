@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/na4ma4/hostcheck/compare/v1.0.1...v1.0.2) (2026-03-27)
+
+
+### Bug Fixes
+
+* removed binary build from docker release workflow ([d62201c](https://github.com/na4ma4/hostcheck/commit/d62201c70792e167fa2bba83ab9491e936245ef0))
+
 ## [1.0.1](https://github.com/na4ma4/hostcheck/compare/v1.0.0...v1.0.1) (2026-03-27)
 
 
