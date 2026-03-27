@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/na4ma4/hostcheck/compare/v1.0.4...v1.0.5) (2026-03-27)
+
+
+### Bug Fixes
+
+* moved check interface to external repository ([5577163](https://github.com/na4ma4/hostcheck/commit/5577163c1a6cb35f01120a210c00486aabdf1ff3))
+
 ## [1.0.4](https://github.com/na4ma4/hostcheck/compare/v1.0.3...v1.0.4) (2026-03-27)
 
 
