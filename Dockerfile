@@ -80,7 +80,7 @@ COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /src/artifacts/build/release/${TARGETOS}/${TARGETARCH}/hostcheck /hostcheck
 
 # Copy plugins
-COPY --from=builder /src/artifacts/build/release/${TARGETOS}/${TARGETARCH}/plugins /plugins
+COPY --from=builder /src/artifacts/build/release/${TARGETOS}/${TARGETARCH}/plugins/ /plugins/
 
 # Use nonroot user (uid 65532) for least privilege
 USER nonroot:nonroot
