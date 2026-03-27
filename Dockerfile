@@ -60,6 +60,8 @@ COPY internal/ ./internal/
 COPY pkg/ ./pkg/
 COPY plugins/ ./plugins/
 
+COPY .git/ .git/
+
 COPY build/ /build/
 
 RUN /build/build-all.sh

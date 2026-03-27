@@ -147,7 +147,7 @@ import (
     "log/slog"
     "time"
 
-    "github.com/na4ma4/hostcheck/pkg/check"
+    check "github.com/na4ma4/go-hostcheck-interface"
 )
 
 // MyCheck implements the check.Check interface.
@@ -265,7 +265,7 @@ import (
     "context"
     "testing"
     
-    "github.com/na4ma4/hostcheck/pkg/check"
+    check "github.com/na4ma4/go-hostcheck-interface"
 )
 
 func TestMyCheck_Run(t *testing.T) {

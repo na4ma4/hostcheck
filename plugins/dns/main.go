@@ -12,7 +12,7 @@ import (
 
 	"github.com/dosquad/go-cliversion"
 	"github.com/miekg/dns"
-	"github.com/na4ma4/hostcheck/pkg/check"
+	check "github.com/na4ma4/go-hostcheck-interface"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 

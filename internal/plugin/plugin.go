@@ -12,8 +12,8 @@ import (
 	"strings"
 	"sync"
 
+	check "github.com/na4ma4/go-hostcheck-interface"
 	"github.com/na4ma4/go-slogtool"
-	"github.com/na4ma4/hostcheck/pkg/check"
 )
 
 var (

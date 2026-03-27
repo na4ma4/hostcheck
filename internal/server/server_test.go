@@ -14,10 +14,10 @@ import (
 	"time"
 
 	"github.com/na4ma4/go-healthcheck"
+	check "github.com/na4ma4/go-hostcheck-interface"
 	"github.com/na4ma4/go-slogtool"
 	"github.com/na4ma4/hostcheck/internal/plugin"
 	"github.com/na4ma4/hostcheck/internal/server"
-	"github.com/na4ma4/hostcheck/pkg/check"
 )
 
 // mockCheck implements check.Check for testing.
