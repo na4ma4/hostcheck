@@ -51,12 +51,6 @@ jobs:
         with:
           version: latest
 
-      - name: Mage Binary Target
-        uses: magefile/mage-action@v4
-        with:
-          version: latest
-          args: build:release
-
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v6
