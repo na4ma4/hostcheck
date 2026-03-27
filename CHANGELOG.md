@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/na4ma4/hostcheck/compare/v1.0.2...v1.0.3) (2026-03-27)
+
+
+### Bug Fixes
+
+* build scripts for docker, added version to plugins ([2de2fa6](https://github.com/na4ma4/hostcheck/commit/2de2fa6fbfab6137fa94b46af9f55f3a6c98d41a))
+
 ## [1.0.2](https://github.com/na4ma4/hostcheck/compare/v1.0.1...v1.0.2) (2026-03-27)
 
 
