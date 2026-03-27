@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.6](https://github.com/na4ma4/hostcheck/compare/v1.0.5...v1.0.6) (2026-03-27)
+
+
+### Bug Fixes
+
+* dockerfile reference to pkg directory ([86cd392](https://github.com/na4ma4/hostcheck/commit/86cd39256853bc04e8165fa11493e7bc5e4facd8))
+
 ## [1.0.5](https://github.com/na4ma4/hostcheck/compare/v1.0.4...v1.0.5) (2026-03-27)
 
 
