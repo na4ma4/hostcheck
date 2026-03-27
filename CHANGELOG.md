@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/na4ma4/hostcheck/compare/v1.0.0...v1.0.1) (2026-03-27)
+
+
+### Miscellaneous Chores
+
+* release 1.0.1 ([8beeefe](https://github.com/na4ma4/hostcheck/commit/8beeefe25d1636d9ea82e03d735cf2e79b94249d))
+
 ## 1.0.0 (2026-03-27)
 
 
