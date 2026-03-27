@@ -60,26 +60,27 @@ COPY internal/ ./internal/
 COPY pkg/ ./pkg/
 COPY plugins/ ./plugins/
 
-# Build DNS plugin directly (CGO required for plugins)
-RUN GOTOOLCHAIN=auto go build -buildmode=plugin -o /artifacts/plugins/dns.so ./plugins/dns
+COPY build/ /build/
 
-# Build the main binary
-RUN GOTOOLCHAIN=auto go build -ldflags="-w -s" -o /hostcheck ./cmd/hostcheck
+RUN /build/build-all.sh
 
 #############################################
 # Final stage - distroless with glibc
 #############################################
 FROM gcr.io/distroless/cc-debian12:nonroot
 
+ARG TARGETOS
+ARG TARGETARCH
+
 # Copy CA certificates and timezone data
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 
 # Copy the binary
-COPY --from=builder /hostcheck /hostcheck
+COPY --from=builder /src/artifacts/build/release/${TARGETOS}/${TARGETARCH}/hostcheck /hostcheck
 
 # Copy plugins
-COPY --from=builder /artifacts/plugins /plugins
+COPY --from=builder /src/artifacts/build/release/${TARGETOS}/${TARGETARCH}/plugins /plugins
 
 # Use nonroot user (uid 65532) for least privilege
 USER nonroot:nonroot

@@ -10,8 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dosquad/go-cliversion"
 	"github.com/miekg/dns"
 	"github.com/na4ma4/hostcheck/pkg/check"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // rootServers contains the IP addresses of root nameservers (populated from embedded named.root).
@@ -97,17 +99,17 @@ func (e *bogonTLDError) Error() string {
 // and should not be processed by public DNS infrastructure.
 // Based on RFC 2606, RFC 6761, RFC 6762, and other standards.
 var bogonTLDs = map[string]bool{
-	".local":        true, // RFC 6762 - mDNS
-	".localhost":    true, // RFC 6761 - reserved for loopback
-	".internal":     true, // Private use
-	".home":         true, // Private use (common home networks)
-	".corp":         true, // Private corporate networks
-	".lan":          true, // Private LAN networks
-	".localdomain":  true, // Private use
-	".test":         true, // RFC 2606 - reserved for testing
-	".example":      true, // RFC 2606 - reserved for documentation
-	".invalid":      true, // RFC 2606 - reserved for invalid domains
-	".onion":        true, // RFC 7686 - Tor hidden services
+	".local":       true, // RFC 6762 - mDNS
+	".localhost":   true, // RFC 6761 - reserved for loopback
+	".internal":    true, // Private use
+	".home":        true, // Private use (common home networks)
+	".corp":        true, // Private corporate networks
+	".lan":         true, // Private LAN networks
+	".localdomain": true, // Private use
+	".test":        true, // RFC 2606 - reserved for testing
+	".example":     true, // RFC 2606 - reserved for documentation
+	".invalid":     true, // RFC 2606 - reserved for invalid domains
+	".onion":       true, // RFC 7686 - Tor hidden services
 }
 
 // isBogonTLD checks if the hostname uses a bogon/private TLD.
@@ -323,6 +325,19 @@ func (d *DNS) Run(ctx context.Context, hostname string, cfg map[string]any) chec
 	}
 }
 
+func (d *DNS) Version() []byte {
+	// Return version information in cliversion format as a JSON string
+	versionInfo := cliversion.Get()
+
+	buf, err := protojson.Marshal(versionInfo)
+	if err != nil {
+		d.logger.Debug("failed to marshal version info", "error", err)
+		return []byte("{}")
+	}
+
+	return buf
+}
+
 // delegation represents a delegation point in the DNS hierarchy.
 type delegation struct {
 	domain string
@@ -338,8 +353,8 @@ type authoritativeZone struct {
 
 // queryDelegationResult is the result of a delegation query.
 type queryDelegationResult struct {
-	delegation       *delegation       // non-nil if delegation found
-	authoritative    *authoritativeZone // non-nil if at authoritative zone
+	delegation    *delegation        // non-nil if delegation found
+	authoritative *authoritativeZone // non-nil if at authoritative zone
 }
 
 // recursiveLookup emulates a recursive DNS lookup starting from root servers.
@@ -558,9 +573,9 @@ func (d *DNS) queryDelegation(ctx context.Context, domain string, nameservers []
 	// If all servers returned REFUSED, provide a clear error message
 	if len(refusedServers) > 0 && len(refusedServers) == len(nameservers) {
 		return nil, &refusedError{
-			domain:    domain,
-			servers:   refusedServers,
-			message:   fmt.Sprintf("All authoritative nameservers for %s refused the query (REFUSED)", domain),
+			domain:  domain,
+			servers: refusedServers,
+			message: fmt.Sprintf("All authoritative nameservers for %s refused the query (REFUSED)", domain),
 		}
 	}
 
@@ -581,7 +596,7 @@ func (d *DNS) queryDelegation(ctx context.Context, domain string, nameservers []
 
 	// No delegation exists - legitimate NXDOMAIN or empty response
 	return nil, &noDelegationError{
-		domain:  domain,
+		domain: domain,
 		message: fmt.Sprintf("no delegation exists for %s (last response from %s: %s)",
 			domain, lastServer, dns.RcodeToString[lastRcode]),
 	}

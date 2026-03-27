@@ -47,4 +47,7 @@ type Check interface {
 
 	// Run executes the check against the given hostname.
 	Run(ctx context.Context, hostname string, cfg map[string]any) Result
+
+	// Version returns the JSON encoded version information of the check (cliversion format).
+	Version() []byte
 }

@@ -47,12 +47,30 @@ func (m *mockCheck) Run(_ context.Context, _ string, _ map[string]any) check.Res
 	return m.result
 }
 
+func (m *mockCheck) Version() []byte {
+	// Return dummy version info in cliversion format as a JSON string
+	versionInfo := map[string]string{
+		"version": "1.0.0",
+	}
+	buf, _ := json.Marshal(versionInfo)
+	return buf
+}
+
 func (c *concurrencyCheck) Name() string {
 	return c.name
 }
 
 func (c *concurrencyCheck) Description() string {
 	return c.description
+}
+
+func (c *concurrencyCheck) Version() []byte {
+	// Return dummy version info in cliversion format as a JSON string
+	versionInfo := map[string]string{
+		"version": "1.0.0",
+	}
+	buf, _ := json.Marshal(versionInfo)
+	return buf
 }
 
 func (c *concurrencyCheck) Run(_ context.Context, _ string, _ map[string]any) check.Result {
