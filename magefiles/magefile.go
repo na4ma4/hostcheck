@@ -9,6 +9,7 @@ import (
 	"github.com/magefile/mage/mg"
 
 	//mage:import
+
 	"github.com/dosquad/mage"
 	_ "github.com/dosquad/mage"
 	"github.com/dosquad/mage/dyndep"
@@ -24,5 +25,5 @@ func init() {
 
 // TestLocal update, protoc, format, tidy, lint & test.
 func TestLocal(ctx context.Context) {
-	mg.CtxDeps(ctx, mage.Test)
+	mg.SerialCtxDeps(ctx, mage.Golang.Lint, mage.Golang.Test)
 }
