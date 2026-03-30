@@ -61,7 +61,7 @@ COPY plugins/ ./plugins/
 
 COPY build/ /build/
 
-RUN --mount=type=cache,target=/src/.git /build/build-all.sh
+RUN --mount=type=bind,source=./.git,target=/src/.git,readonly /build/build-all.sh
 
 #############################################
 # Final stage - distroless with glibc

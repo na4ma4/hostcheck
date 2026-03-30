@@ -1,3 +1,5 @@
 image: "ghcr.io/na4ma4/hostcheck"
+options:
+  build_in_docker: true
 platforms:
   - linux/arm64

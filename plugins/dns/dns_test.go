@@ -9,24 +9,24 @@ import (
 	"time"
 
 	"github.com/miekg/dns"
-	"github.com/na4ma4/hostcheck/pkg/check"
+	check "github.com/na4ma4/go-hostcheck-interface"
 )
 
 // mockDNSServer is a mock DNS server for testing
 type mockDNSServer struct {
-	server      *dns.Server
-	addr        string
-	zones       map[string]*mockZone
-	defaultRc   int // Default response code for unknown queries
+	server    *dns.Server
+	addr      string
+	zones     map[string]*mockZone
+	defaultRc int // Default response code for unknown queries
 }
 
 type mockZone struct {
-	soa    *dns.SOA
-	ns     []*dns.NS
-	a      map[string][]string // hostname -> IPs
-	cname  map[string]string   // hostname -> target
-	glue   map[string][]string // NS hostname -> IPs
-	rcode  int                 // Response code for this zone
+	soa   *dns.SOA
+	ns    []*dns.NS
+	a     map[string][]string // hostname -> IPs
+	cname map[string]string   // hostname -> target
+	glue  map[string][]string // NS hostname -> IPs
+	rcode int                 // Response code for this zone
 }
 
 func newMockDNSServer() *mockDNSServer {
@@ -181,8 +181,8 @@ func (m *mockDNSServer) handleNSQuery(msg *dns.Msg, q dns.Question) {
 			// Return NS records
 			for _, ns := range zone.ns {
 				msg.Answer = append(msg.Answer, &dns.NS{
-					Hdr:    dns.RR_Header{Name: qname, Rrtype: dns.TypeNS, Class: dns.ClassINET, Ttl: 300},
-					Ns:     ns.Ns,
+					Hdr: dns.RR_Header{Name: qname, Rrtype: dns.TypeNS, Class: dns.ClassINET, Ttl: 300},
+					Ns:  ns.Ns,
 				})
 			}
 			// Add glue records
@@ -345,10 +345,10 @@ func TestDNS_Description(t *testing.T) {
 
 func TestDNS_BogonTLD(t *testing.T) {
 	tests := []struct {
-		name     string
-		hostname string
+		name      string
+		hostname  string
 		wantBogon bool
-		wantTLD  string
+		wantTLD   string
 	}{
 		{"local TLD", "host.local", true, "local"},
 		{"localhost TLD", "host.localhost", true, "localhost"},
@@ -470,9 +470,9 @@ func TestDNS_ErrorTypes(t *testing.T) {
 		{
 			name: "refused error",
 			err: &refusedError{
-				domain:    "example.com",
-				servers:   []string{"ns1.example.com"},
-				message:   "refused",
+				domain:  "example.com",
+				servers: []string{"ns1.example.com"},
+				message: "refused",
 			},
 			wantType: "*main.refusedError",
 		},
