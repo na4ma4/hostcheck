@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/na4ma4/hostcheck/compare/v1.0.7...v1.1.0) (2026-03-30)
+
+
+### Features
+
+* updated plugin signature, added hostname to URI ([06dde0f](https://github.com/na4ma4/hostcheck/commit/06dde0f833ab0e9d37e93af0904468f9828ed598))
+
+
+### Bug Fixes
+
+* dns plugin for changes to plugin interface ([bc3ada7](https://github.com/na4ma4/hostcheck/commit/bc3ada7aad09bbe960e86f110179a4265e65b98c))
+
 ## [1.0.7](https://github.com/na4ma4/hostcheck/compare/v1.0.6...v1.0.7) (2026-03-30)
 
 
