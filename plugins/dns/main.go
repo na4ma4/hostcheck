@@ -45,6 +45,14 @@ func (d *DNS) Name() string {
 	return "dns"
 }
 
+func (d *DNS) Info() check.PluginInfo {
+	return check.PluginInfo{
+		Name:        d.Name(),
+		Description: d.Description(),
+		Type:        check.PluginTypeHostCheck,
+	}
+}
+
 // Description returns a human-readable description.
 func (d *DNS) Description() string {
 	return "Validates DNS records (SOA, NS) by emulating recursive DNS lookup from root servers"
@@ -147,7 +155,7 @@ func isBogonTLD(hostname string) (bool, string) {
 const defaultTimeout = 30 * time.Second
 
 // Run executes the DNS check against the given hostname.
-func (d *DNS) Run(ctx context.Context, hostname string, cfg map[string]any) check.Result {
+func (d *DNS) Run(ctx context.Context, hostname string, cfg map[string]any, _ []check.Result) check.Result {
 	start := time.Now()
 	details := make([]string, 0)
 	tasks := make([]check.ResultTask, 0)

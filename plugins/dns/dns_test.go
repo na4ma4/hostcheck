@@ -380,7 +380,7 @@ func TestDNS_BogonTLD(t *testing.T) {
 func TestDNS_Run_BogonTLD(t *testing.T) {
 	d := NewDNS()
 
-	result := d.Run(context.Background(), "host.local", nil)
+	result := d.Run(context.Background(), "host.local", nil, nil)
 	if result.Status != check.StatusError {
 		t.Errorf("Run() status = %v, want %v", result.Status, check.StatusError)
 	}
@@ -406,7 +406,7 @@ func TestDNS_Run_NXDOMAIN(t *testing.T) {
 
 	result := d.Run(context.Background(), "fail-domain.example-mock.com", map[string]any{
 		"timeout": 5,
-	})
+	}, nil)
 
 	if result.Status != check.StatusFail {
 		t.Errorf("Run() status = %v, want %v for NXDOMAIN domain", result.Status, check.StatusFail)
@@ -430,7 +430,7 @@ func TestDNS_Run_PassWithoutCNAME(t *testing.T) {
 
 	result := d.Run(context.Background(), "pass-nocname.example-mock.com", map[string]any{
 		"timeout": 5,
-	})
+	}, nil)
 
 	// Note: This test may fail because the DNS check does recursive lookup from root
 	// For this test to work properly, we'd need a more sophisticated mock
@@ -455,7 +455,7 @@ func TestDNS_Run_PassWithCNAME(t *testing.T) {
 
 	result := d.Run(context.Background(), "alias.pass-cname.example-mock.com", map[string]any{
 		"timeout": 5,
-	})
+	}, nil)
 
 	// Note: This test requires proper mock DNS infrastructure
 	_ = result

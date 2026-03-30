@@ -5,7 +5,7 @@ go 1.26.1
 require (
 	github.com/dosquad/go-cliversion v0.3.0
 	github.com/miekg/dns v1.1.72
-	github.com/na4ma4/go-hostcheck-interface v0.0.0-20260327061339-59a07edd4795
+	github.com/na4ma4/go-hostcheck-interface v0.0.0-20260330015257-2c1a0c04e9de
 	google.golang.org/protobuf v1.36.11
 )
 
