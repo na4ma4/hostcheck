@@ -3,12 +3,13 @@ module github.com/na4ma4/hostcheck/plugins/dns
 go 1.26.1
 
 require (
+	github.com/dosquad/go-cliversion v0.3.0
 	github.com/miekg/dns v1.1.72
-	github.com/na4ma4/hostcheck v0.0.0
+	github.com/na4ma4/go-hostcheck-interface v0.0.0-20260327061339-59a07edd4795
+	google.golang.org/protobuf v1.36.11
 )
 
 require (
-	github.com/google/go-cmp v0.7.0 // indirect
 	golang.org/x/mod v0.34.0 // indirect
 	golang.org/x/net v0.52.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect

@@ -18,6 +18,7 @@ var Default = TestLocal
 
 func init() {
 	os.Setenv("CGO_ENABLED", "1")
+	os.Setenv("PLUGINS_DIR", "./artifacts/plugins")
 	dyndep.Add(dyndep.Build, Plugin.BuildAll)
 	dyndep.Add(dyndep.Run, Plugin.BuildAll)
 }

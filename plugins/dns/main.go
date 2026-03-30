@@ -477,6 +477,7 @@ func (d *DNS) queryDelegation(ctx context.Context, domain string, nameservers []
 
 		// Check for NS records in answer section (authoritative response)
 		nsRecords := make([]string, 0)
+		hasTerminalAnswer := false
 		for _, ans := range r.Answer {
 			if ns, ok := ans.(*dns.NS); ok {
 				// Check if this NS record is actually for the domain we queried
@@ -488,6 +489,9 @@ func (d *DNS) queryDelegation(ctx context.Context, domain string, nameservers []
 					// This hostname is a leaf (A/CNAME), not a zone
 					// Return the parent zone as authoritative
 					parentZone := getParentDomain(domain)
+					if parentZone == "" {
+						parentZone = domain
+					}
 					return &queryDelegationResult{
 						authoritative: &authoritativeZone{
 							zone: parentZone,
@@ -495,7 +499,30 @@ func (d *DNS) queryDelegation(ctx context.Context, domain string, nameservers []
 					}, nil
 				}
 				nsRecords = append(nsRecords, ns.Ns)
+				continue
 			}
+
+			// Non-NS answers for the queried name (for example CNAME) indicate this
+			// label is a terminal record under the parent zone, not a delegated zone.
+			answerDomain := strings.TrimSuffix(ans.Header().Name, ".")
+			if answerDomain == domain {
+				hasTerminalAnswer = true
+				d.trace("queryDelegation: terminal answer indicates leaf record",
+					"queried_domain", domain,
+					"answer_type", dns.TypeToString[ans.Header().Rrtype])
+			}
+		}
+
+		if hasTerminalAnswer {
+			parentZone := getParentDomain(domain)
+			if parentZone == "" {
+				parentZone = domain
+			}
+			return &queryDelegationResult{
+				authoritative: &authoritativeZone{
+					zone: parentZone,
+				},
+			}, nil
 		}
 
 		if len(nsRecords) > 0 {
