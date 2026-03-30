@@ -74,6 +74,51 @@
         let availableChecks = [];
         const HISTORY_KEY = 'hostcheck_history';
         const MAX_HISTORY = 10;
+
+        function parseShareParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                hostname: (params.get('hostname') || '').trim(),
+                checks: params.getAll('check').filter(Boolean)
+            };
+        }
+
+        function updateShareURL(hostname, checks) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('hostname');
+            url.searchParams.delete('check');
+
+            if (hostname) {
+                url.searchParams.set('hostname', hostname);
+            }
+
+            checks.forEach(c => url.searchParams.append('check', c));
+            window.history.replaceState({}, '', url);
+        }
+
+        function applyShareParams() {
+            const shared = parseShareParams();
+            if (shared.hostname) {
+                document.getElementById('hostname').value = shared.hostname;
+            }
+
+            if (shared.checks.length > 0) {
+                const selected = new Set(shared.checks);
+                const checkboxes = Array.from(document.querySelectorAll('.checks-grid input[type="checkbox"]'));
+                let applied = false;
+
+                checkboxes.forEach(box => {
+                    const shouldCheck = selected.has(box.value);
+                    box.checked = shouldCheck;
+                    if (shouldCheck) applied = true;
+                });
+
+                // Keep defaults when no check in URL matches available checks.
+                if (!applied) {
+                    checkboxes.forEach(box => box.checked = true);
+                }
+            }
+        }
         
         function loadHistory() {
             try {
@@ -130,6 +175,7 @@
             const data = await resp.json();
             availableChecks = data.checks || [];
             renderChecks();
+            applyShareParams();
         }
         
         function renderChecks() {
@@ -151,6 +197,8 @@
             
             const checked = Array.from(document.querySelectorAll('.checks-grid input:checked')).map(i => i.value);
             if (checked.length === 0) { alert('Please select at least one check'); return; }
+
+            updateShareURL(hostname, checked);
             
             const btn = document.getElementById('runBtn');
             const results = document.getElementById('results');

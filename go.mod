@@ -6,7 +6,7 @@ require (
 	github.com/dosquad/go-cliversion v0.3.0
 	github.com/na4ma4/config v1.0.7
 	github.com/na4ma4/go-contextual v0.3.0
-	github.com/na4ma4/go-hostcheck-interface v0.0.0-20260327061339-59a07edd4795
+	github.com/na4ma4/go-hostcheck-interface v0.0.0-20260330015257-2c1a0c04e9de
 	github.com/prometheus/client_golang v1.23.2
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0

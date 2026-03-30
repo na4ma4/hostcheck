@@ -670,48 +670,89 @@ func (s *Server) processChecks(
 	resultCh chan<- check.Result,
 ) {
 	s.logger.Debug("processChecks: started")
-	defer s.logger.Debug("processChecks: completed")
+
+	// Group checks by plugin type
+	byType := make(map[check.PluginType][]check.Check)
 	for _, c := range checks {
-		s.logger.Debug("processChecks: starting check",
-			slog.String("hostname", req.Hostname), slog.String("check", c.Name()))
-		ctx.Go(func() error {
-			if err := s.acquireSemaphore(ctx); err != nil {
-				s.logger.Debug(
-					"processChecks: check skipped due context cancellation while waiting for semaphore",
+		t := c.Info().Type
+		byType[t] = append(byType[t], c)
+	}
+
+	// Run all stages inside a single ctx.Go so ctx.Wait() in callers still works.
+	// Stages execute sequentially in PluginTypeOrder; checks within each stage run in parallel.
+	ctx.Go(func() error {
+		defer s.logger.Debug("processChecks: completed")
+
+		var accumulated []check.Result
+
+		for _, pluginType := range check.PluginTypeOrder {
+			stageChecks := byType[pluginType]
+			if len(stageChecks) == 0 {
+				continue
+			}
+
+			// Snapshot accumulated results for this stage so all checks in the
+			// stage see the same input regardless of execution order.
+			data := make([]check.Result, len(accumulated))
+			copy(data, accumulated)
+
+			stageCh := make(chan check.Result, len(stageChecks))
+			eg, _ := errgroup.WithContext(ctx)
+
+			for _, c := range stageChecks {
+				s.logger.Debug("processChecks: starting check",
 					slog.String("hostname", req.Hostname),
 					slog.String("check", c.Name()),
-					slog.String("error", err.Error()),
+					slog.String("type", string(pluginType)),
 				)
+				eg.Go(func() error {
+					if err := s.acquireSemaphore(ctx); err != nil {
+						s.logger.Debug(
+							"processChecks: check skipped due context cancellation while waiting for semaphore",
+							slog.String("hostname", req.Hostname),
+							slog.String("check", c.Name()),
+							slog.String("error", err.Error()),
+						)
+						return nil
+					}
+					defer s.releaseSemaphore()
 
-				return nil
+					s.logger.Debug(
+						"processChecks: running check",
+						slog.String("hostname", req.Hostname),
+						slog.String("check", c.Name()),
+					)
+					start := time.Now()
+					cfg := s.registry.GetConfig(c.Name())
+					result := c.Run(ctx, req.Hostname, cfg, data)
+					result.Duration = time.Since(start).Round(time.Millisecond).String()
+
+					// Record metrics
+					s.metrics.CheckDuration.WithLabelValues(c.Name()).Observe(time.Since(start).Seconds())
+					s.metrics.ChecksTotal.WithLabelValues(c.Name(), string(result.Status)).Inc()
+
+					s.logger.Debug("processChecks: check complete",
+						slog.String("hostname", req.Hostname),
+						slog.String("check", c.Name()),
+						slog.String("status", string(result.Status)),
+						slog.String("duration", result.Duration),
+					)
+					stageCh <- result
+					return nil
+				})
 			}
-			defer s.releaseSemaphore()
 
-			s.logger.Debug(
-				"HandleCheckSSE: running check",
-				slog.String("hostname", req.Hostname),
-				slog.String("check", c.Name()),
-			)
-			start := time.Now()
-			cfg := s.registry.GetConfig(c.Name())
-			result := c.Run(ctx, req.Hostname, cfg)
-			result.Duration = time.Since(start).Round(time.Millisecond).String()
+			_ = eg.Wait()
+			close(stageCh)
 
-			// Record metrics
-			s.metrics.CheckDuration.WithLabelValues(c.Name()).Observe(time.Since(start).Seconds())
-			s.metrics.ChecksTotal.WithLabelValues(c.Name(), string(result.Status)).Inc()
+			for result := range stageCh {
+				accumulated = append(accumulated, result)
+				resultCh <- result
+			}
+		}
 
-			s.logger.Debug("HandleCheckSSE: check complete",
-				slog.String("hostname", req.Hostname),
-				slog.String("check", c.Name()),
-				slog.String("status", string(result.Status)),
-				slog.String("duration", result.Duration),
-			)
-			resultCh <- result
-
-			return nil
-		})
-	}
+		return nil
+	})
 }
 
 type CheckInfo struct {

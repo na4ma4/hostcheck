@@ -33,8 +33,8 @@ github.com/na4ma4/go-contextual v0.3.0 h1:vW3a/LnoGqj+eNoAoEdtBRgaBACQFhCk0Ul0ai
 github.com/na4ma4/go-contextual v0.3.0/go.mod h1:jR6W+W4D9/GUifs1eEPNJ7HEw2IEqJBCxk0ojn6IPPk=
 github.com/na4ma4/go-healthcheck v0.3.0 h1:srPbOaMAjZr1ro+ta3kJBlWRGzD7uUd76r62FkpoU3k=
 github.com/na4ma4/go-healthcheck v0.3.0/go.mod h1:lQE73cnv2cvhd4Onqj8CXsPrX0igWGrNAFWFmv/l08w=
-github.com/na4ma4/go-hostcheck-interface v0.0.0-20260327061339-59a07edd4795 h1:CfbPQKioPz/bHzUHdv4mlucHK7EERQ6sGYNPMWoHgQs=
-github.com/na4ma4/go-hostcheck-interface v0.0.0-20260327061339-59a07edd4795/go.mod h1:ZB7vk0GaZvrp93luANwZF2rL1pcoMWmZM4KStIsYHuU=
+github.com/na4ma4/go-hostcheck-interface v0.0.0-20260330015257-2c1a0c04e9de h1:rOxmXoIGMjL9AsCVjHCUw9GInSxZlh6Qcc/6P1u5T5U=
+github.com/na4ma4/go-hostcheck-interface v0.0.0-20260330015257-2c1a0c04e9de/go.mod h1:ZB7vk0GaZvrp93luANwZF2rL1pcoMWmZM4KStIsYHuU=
 github.com/na4ma4/go-permbits v0.5.4 h1:rG8sV6zAeOj+ONjTUqAcj3f4N1tS8QTi0V6PvlKGkgQ=
 github.com/na4ma4/go-permbits v0.5.4/go.mod h1:hTZ7mFUNSW40AazP1B02K74sSJP9Moaei2LVSyJHFAQ=
 github.com/na4ma4/go-slogtool v0.1.3 h1:G33/pkahFIW3xY1usr7rU/6Jtu8mTJ297gdGLyEXsX0=

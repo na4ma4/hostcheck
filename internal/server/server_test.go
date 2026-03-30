@@ -39,11 +39,15 @@ func (m *mockCheck) Name() string {
 	return m.name
 }
 
+func (m *mockCheck) Info() check.PluginInfo {
+	return check.PluginInfo{Name: m.name, Description: m.description, Type: check.PluginTypeHostCheck}
+}
+
 func (m *mockCheck) Description() string {
 	return m.description
 }
 
-func (m *mockCheck) Run(_ context.Context, _ string, _ map[string]any) check.Result {
+func (m *mockCheck) Run(_ context.Context, _ string, _ map[string]any, _ []check.Result) check.Result {
 	return m.result
 }
 
@@ -60,6 +64,10 @@ func (c *concurrencyCheck) Name() string {
 	return c.name
 }
 
+func (c *concurrencyCheck) Info() check.PluginInfo {
+	return check.PluginInfo{Name: c.name, Description: c.description, Type: check.PluginTypeHostCheck}
+}
+
 func (c *concurrencyCheck) Description() string {
 	return c.description
 }
@@ -73,7 +81,7 @@ func (c *concurrencyCheck) Version() []byte {
 	return buf
 }
 
-func (c *concurrencyCheck) Run(_ context.Context, _ string, _ map[string]any) check.Result {
+func (c *concurrencyCheck) Run(_ context.Context, _ string, _ map[string]any, _ []check.Result) check.Result {
 	current := c.running.Add(1)
 	for {
 		maxCurrent := c.maxRunning.Load()
