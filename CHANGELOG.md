@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.7](https://github.com/na4ma4/hostcheck/compare/v1.0.6...v1.0.7) (2026-03-30)
+
+
+### Bug Fixes
+
+* dns lookups ([bbe997d](https://github.com/na4ma4/hostcheck/commit/bbe997d68e4969d27bd77d50573c95a52f5719fb))
+* mounting .git as a cache and not readonly from the host ([f93eb5d](https://github.com/na4ma4/hostcheck/commit/f93eb5db9df1e61e140dbdc1a4d241d5ed2cb87c))
+
 ## [1.0.6](https://github.com/na4ma4/hostcheck/compare/v1.0.5...v1.0.6) (2026-03-27)
 
 
