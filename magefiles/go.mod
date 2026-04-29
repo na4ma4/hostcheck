@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/dosquad/mage v0.4.0
-	github.com/magefile/mage v1.17.0
+	github.com/magefile/mage v1.17.2
 	github.com/princjef/mageutil v1.0.0
 )
 
