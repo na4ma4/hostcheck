@@ -1,7 +1,6 @@
 github.com/VividCortex/ewma v1.1.1/go.mod h1:2Tkkvm3sRDVXaiyucHiACn4cqf7DpdyLvmxzcbUokwA=
 github.com/VividCortex/ewma v1.2.0 h1:f58SaIzcDXrSy3kWaHNvuJgJ3Nmz59Zji6XoJR/q1ow=
 github.com/VividCortex/ewma v1.2.0/go.mod h1:nz4BbCtbLyFDeC9SUHbtcT5644juEuWfUAUnGx7j5l4=
-github.com/cheggaaa/pb v2.0.7+incompatible h1:gLKifR1UkZ/kLkda5gC0K6c8g+jU2sINPtBeOiNlMhU=
 github.com/cheggaaa/pb v2.0.7+incompatible/go.mod h1:pQciLPpbU0oxA0h+VJYYLxO+XeDQb5pZijXscXHm81s=
 github.com/cheggaaa/pb/v3 v3.0.4/go.mod h1:7rgWxLrAUcFMkvJuv09+DYi7mMUYi8nO9iOWcvGJPfw=
 github.com/cheggaaa/pb/v3 v3.1.7 h1:2FsIW307kt7A/rz/ZI2lvPO+v3wKazzE4K/0LtTWsOI=
@@ -14,8 +13,6 @@ github.com/dosquad/go-cliversion v0.3.0 h1:YQG2EOQX9dmfd/+4h3X+ee9nMPqbqxaHhsa/7
 github.com/dosquad/go-cliversion v0.3.0/go.mod h1:Gliu0a5jfTOsxfdXoxhGz3bDHva5gMJPn/Bcuh94sTg=
 github.com/dosquad/go-giturl v0.1.1 h1:5rAICr4ycztRDDia/BzcX5QKyQI6vZ3i8HMbZZT9/sw=
 github.com/dosquad/go-giturl v0.1.1/go.mod h1:rlSpkXg6Ra92tAHXDBLvCy6ddWJt/9Go+5dc2WVtZS8=
-github.com/dosquad/mage v0.3.4 h1:5DU1JMwxTWbvytPa4BcjpLFenzkLQM57c+O+xMW2EMk=
-github.com/dosquad/mage v0.3.4/go.mod h1:Tmm5SwOBLh5mw9Zzwllrrr0/DOnqOJmvqEbh/dWIkBg=
 github.com/dosquad/mage v0.4.0 h1:PW/6AjT7trGLHCJ75EfxOwtv/fnC6B/igq1Kt1nr5Sk=
 github.com/dosquad/mage v0.4.0/go.mod h1:y9HcpfWXHcBmgKM999ym+ul84rZqiuFFiSUw/mBB6kI=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
@@ -30,8 +27,8 @@ github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
 github.com/kr/text v0.2.0/go.mod h1:eLer722TekiGuMkidMxC/pM04lWEeraHUUmBw8l2grE=
-github.com/magefile/mage v1.17.0 h1:dS4tkq997Ism03akafC8509iqDjeE7TNTexI25Y7sXM=
-github.com/magefile/mage v1.17.0/go.mod h1:Yj51kqllmsgFpvvSzgrZPK9WtluG3kUhFaBUVLo4feA=
+github.com/magefile/mage v1.17.2 h1:fyXVu1eadI8Ap1HCCNgEhJ5McIWiYhLR8uol64ZZc40=
+github.com/magefile/mage v1.17.2/go.mod h1:Yj51kqllmsgFpvvSzgrZPK9WtluG3kUhFaBUVLo4feA=
 github.com/matryer/is v1.3.0 h1:9qiso3jaJrOe6qBRJRBt2Ldht05qDiFP9le0JOIhRSI=
 github.com/matryer/is v1.3.0/go.mod h1:2fLPjFQM9rhQ15aVEtbuwhJinnOqrmgXPNdZsdwlWXA=
 github.com/mattn/go-colorable v0.1.2/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
